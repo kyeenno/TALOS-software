@@ -8637,20 +8637,20 @@ static void read_sample(sample_t *s)
  8003614:	20000098 	.word	0x20000098
 
 08003618 <get_live_data>:
-#define FF_THRESH_MG   300   // below this magnitude = "weightless"
-#define FF_MIN_SAMPLES 3     // must hold this many samples in a row
+#define SETTLE_MS     1000
+#define FF_THRESH_MG   300 // below this magnitude = "weightless"
+#define FF_MIN_SAMPLES 3
 
-/* Sample, print and detect free fall continuously until B1 is pressed again */
 static void get_live_data(void)
 {
  8003618:	b5f0      	push	{r4, r5, r6, r7, lr}
  800361a:	b093      	sub	sp, #76	@ 0x4c
  800361c:	af06      	add	r7, sp, #24
-    sample_t s;                                                // C: one sample, no array
+    sample_t s;
     uint32_t next = HAL_GetTick();
  800361e:	f7fd f915 	bl	800084c <HAL_GetTick>
  8003622:	62f8      	str	r0, [r7, #44]	@ 0x2c
-    int run = 0, in_ff = 0;                                    // free-fall detector state
+    int run = 0, in_ff = 0; // free fall detect
  8003624:	2300      	movs	r3, #0
  8003626:	62bb      	str	r3, [r7, #40]	@ 0x28
  8003628:	2300      	movs	r3, #0
@@ -8696,7 +8696,7 @@ static void get_live_data(void)
  8003662:	f9b7 300c 	ldrsh.w	r3, [r7, #12]
         printf("%lu ms | %d, %d, %d mG | %ld, %ld, %ld mdps | %d\n *C", s.t_ms,
  8003666:	461d      	mov	r5, r3
-               (long)s.gx * 175 / 10,                          // mdps range: +-500 dps
+               (long)s.gx * 175 / 10, // mdps range: +-500 dps
  8003668:	f9b7 300e 	ldrsh.w	r3, [r7, #14]
  800366c:	461a      	mov	r2, r3
  800366e:	23af      	movs	r3, #175	@ 0xaf
@@ -8743,7 +8743,7 @@ static void get_live_data(void)
  80036c4:	4827      	ldr	r0, [pc, #156]	@ (8003764 <get_live_data+0x14c>)
  80036c6:	f000 fb19 	bl	8003cfc <iprintf>
 
-        /* live free-fall detection on the magnitude (squared, so no sqrt) */
+        // free fall detection
         int32_t mag2 = (int32_t)s.ax*s.ax + (int32_t)s.ay*s.ay + (int32_t)s.az*s.az;
  80036ca:	f9b7 3008 	ldrsh.w	r3, [r7, #8]
  80036ce:	f9b7 2008 	ldrsh.w	r2, [r7, #8]
@@ -8762,7 +8762,7 @@ static void get_live_data(void)
  80036f6:	69fb      	ldr	r3, [r7, #28]
  80036f8:	429a      	cmp	r2, r3
  80036fa:	da14      	bge.n	8003726 <get_live_data+0x10e>
-            if (run == 0) run_start = s.t_ms;                  // remember the first sample of the run
+            if (run == 0) run_start = s.t_ms;
  80036fc:	6abb      	ldr	r3, [r7, #40]	@ 0x28
  80036fe:	2b00      	cmp	r3, #0
  8003700:	d101      	bne.n	8003706 <get_live_data+0xee>
@@ -8875,7 +8875,7 @@ int main(void)
   i2c1_init();
  800379e:	f7ff fd3b 	bl	8003218 <i2c1_init>
 
-  /* check devices */
+  /* Check devices */
   printf("accel LSM303AGR 0x19: %s\n",
          HAL_I2C_IsDeviceReady(&hi2c1, ACC_ADDR, 3, 100) == HAL_OK ? "yes" : "no");
  80037a2:	2364      	movs	r3, #100	@ 0x64
@@ -8937,7 +8937,7 @@ int main(void)
  8003806:	f7ff fe23 	bl	8003450 <gyro_rd>
  800380a:	4603      	mov	r3, r0
  800380c:	71fb      	strb	r3, [r7, #7]
-  printf("gyro I3G4250D WHO_AM_I 0x%02X, HAL status %d\n", id, st); // D3
+  printf("gyro I3G4250D WHO_AM_I 0x%02X, HAL status %d\n", id, st); // expected D3
  800380e:	79bb      	ldrb	r3, [r7, #6]
  8003810:	4619      	mov	r1, r3
  8003812:	79fb      	ldrb	r3, [r7, #7]
@@ -8946,11 +8946,11 @@ int main(void)
  8003818:	f000 fa70 	bl	8003cfc <iprintf>
 
   // write gyro data
-  gyro_wr(0x20, 0x4F);   // CTRL_REG1: 190 Hz output, powered on, X/Y/Z enabled
+  gyro_wr(0x20, 0x4F);
  800381c:	214f      	movs	r1, #79	@ 0x4f
  800381e:	2020      	movs	r0, #32
  8003820:	f7ff fdee 	bl	8003400 <gyro_wr>
-  gyro_wr(0x23, 0x90);   // CTRL_REG4: block-data-update on, +-500 dps
+  gyro_wr(0x23, 0x90);
  8003824:	2190      	movs	r1, #144	@ 0x90
  8003826:	2023      	movs	r0, #35	@ 0x23
  8003828:	f7ff fdea 	bl	8003400 <gyro_wr>

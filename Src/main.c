@@ -24,8 +24,8 @@
 I2C_HandleTypeDef hi2c1; // stm32 HAL
 
 /* Connect pins to I2C1 --- start */
-#define ACC_ADDR (0x19 << 1)             // Sensor: 7-bit address; <<1 because HAL wants it shifted
-#define MAG_ADDR (0x1E << 1)             // Sensor: magnetometer has its own address
+#define ACC_ADDR (0x19 << 1)
+#define MAG_ADDR (0x1E << 1)
 
 static void i2c1_init(void)
 {
@@ -33,15 +33,13 @@ static void i2c1_init(void)
     __HAL_RCC_GPIOB_CLK_ENABLE();
     __HAL_RCC_I2C1_CLK_ENABLE();
 
-    // configure && apply settings for GPIO block port B
     GPIO_InitTypeDef g = {0};
     g.Pin = GPIO_PIN_6 | GPIO_PIN_9;
-    g.Mode = GPIO_MODE_AF_OD; // required by I2C
-    g.Pull = GPIO_PULLUP; // pull up resistor: on
+    g.Mode = GPIO_MODE_AF_OD;
+    g.Pull = GPIO_PULLUP;
     g.Alternate = GPIO_AF4_I2C1; // connect pins to I2C (AF4 for PB6, PB9)
     HAL_GPIO_Init(GPIOB, &g);
 
-    // configure && apply settings for I2C block
     hi2c1.Instance = I2C1;
     hi2c1.Init.ClockSpeed = 100000; // 100 kHz bus clock
     hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT; // 7-bit mode
@@ -51,20 +49,15 @@ static void i2c1_init(void)
     HAL_I2C_Init(&hi2c1);
 }
 
-static void wr(uint16_t dev, uint8_t reg, uint8_t val)       // helper: write one register
+// write one register
+static void wr(uint16_t dev, uint8_t reg, uint8_t val)
 {
     HAL_I2C_Mem_Write(&hi2c1, dev, reg, I2C_MEMADD_SIZE_8BIT, &val, 1, 100);
-}
-static uint8_t rd(uint16_t dev, uint8_t reg)                 // helper: read one register
-{
-    uint8_t v = 0;
-    HAL_I2C_Mem_Read(&hi2c1, dev, reg, I2C_MEMADD_SIZE_8BIT, &v, 1, 100);
-    return v;
 }
 /* Connect pins to I2C1 --- end */
 
 /* Configure gyro --- start */
-SPI_HandleTypeDef hspi_gyro;                    // STM32 HAL: SPI1 settings/state
+SPI_HandleTypeDef hspi_gyro;
 
 static void gyro_spi_init(void)
 {
@@ -72,54 +65,51 @@ static void gyro_spi_init(void)
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_SPI1_CLK_ENABLE();
 
-    GPIO_InitTypeDef g = {0};                   // C: zeroed struct
-    g.Pin       = GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;   // PA5 SCK, PA6 MISO, PA7 MOSI
-    g.Mode      = GPIO_MODE_AF_PP;              // alternate function, push-pull (SPI actively drives high and low)
+    GPIO_InitTypeDef g = {0};
+    g.Pin       = GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;
+    g.Mode      = GPIO_MODE_AF_PP;
     g.Pull      = GPIO_PULLDOWN;
     g.Speed     = GPIO_SPEED_FREQ_HIGH;
-    g.Alternate = GPIO_AF5_SPI1;                // STM32: connect these pins to SPI1
+    g.Alternate = GPIO_AF5_SPI1;
     HAL_GPIO_Init(GPIOA, &g);
 
-    g.Pin  = GYRO_CS_PIN;                        // PE3 = chip select, driven by hand as a plain output
+    g.Pin  = GYRO_CS_PIN;
     g.Mode = GPIO_MODE_OUTPUT_PP;
     g.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GYRO_CS_GPIO_PORT, &g);
-    GYRO_CS_HIGH();                             // idle = chip deselected
+    GYRO_CS_HIGH();
 
     hspi_gyro.Instance               = SPI1;
     hspi_gyro.Init.Mode              = SPI_MODE_MASTER;
     hspi_gyro.Init.Direction         = SPI_DIRECTION_2LINES;
-    hspi_gyro.Init.DataSize          = SPI_DATASIZE_8BIT;
-    hspi_gyro.Init.CLKPolarity       = SPI_POLARITY_LOW;    // Sensor: L3GD20 uses SPI mode 0
+    hspi_gyro.Init.CLKPolarity       = SPI_POLARITY_LOW;
     hspi_gyro.Init.CLKPhase          = SPI_PHASE_1EDGE;
-    hspi_gyro.Init.NSS               = SPI_NSS_SOFT;         // we toggle CS ourselves
-    hspi_gyro.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;   // 100 MHz / 16 = 6.25 MHz (chip max 10)
-    hspi_gyro.Init.FirstBit          = SPI_FIRSTBIT_MSB;
-    hspi_gyro.Init.TIMode            = SPI_TIMODE_DISABLE;
-    hspi_gyro.Init.CRCCalculation    = SPI_CRCCALCULATION_DISABLE;
+    hspi_gyro.Init.NSS               = SPI_NSS_SOFT;
+    hspi_gyro.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16; // 100 MHz / 16 = 6,25 MHz (chip max 10)
     HAL_SPI_Init(&hspi_gyro);
 }
 
-static void gyro_wr(uint8_t reg, uint8_t val)             // write one register
+// write one register
+static void gyro_wr(uint8_t reg, uint8_t val)
 {
-	uint8_t tx[2] = { reg, val };      // bit 7 = 0 means write
+	uint8_t tx[2] = { reg, val };
 	uint8_t rx[2];
 	GYRO_CS_LOW();
 	HAL_SPI_TransmitReceive(&hspi_gyro, tx, rx, 2, 100);
 	GYRO_CS_HIGH();
 }
 
-static HAL_StatusTypeDef gyro_rd(uint8_t reg, uint8_t *buf, uint8_t n)   // n must be <= 6
+static HAL_StatusTypeDef gyro_rd(uint8_t reg, uint8_t *buf, uint8_t n)
 {
-    uint8_t tx[7] = {0};                                  // C: zeroed; the dummy bytes after the command stay 0
+    uint8_t tx[7] = {0};
     uint8_t rx[7] = {0};
-    tx[0] = reg | READWRITE_CMD | (n > 1 ? MULTIPLEBYTE_CMD : 0);   // STM32 BSP header constants
+    tx[0] = reg | READWRITE_CMD | (n > 1 ? MULTIPLEBYTE_CMD : 0);
 
     GYRO_CS_LOW();
-    HAL_StatusTypeDef s = HAL_SPI_TransmitReceive(&hspi_gyro, tx, rx, n + 1, 100);   // STM32 HAL
+    HAL_StatusTypeDef s = HAL_SPI_TransmitReceive(&hspi_gyro, tx, rx, n + 1, 100);
     GYRO_CS_HIGH();
 
-    for (uint8_t i = 0; i < n; i++) buf[i] = rx[i + 1];   // rx[0] was clocked in during the command byte, so skip it
+    for (uint8_t i = 0; i < n; i++) buf[i] = rx[i + 1];
     return s;
 }
 /* Configure gyro --- end */
@@ -132,99 +122,115 @@ int _write(int file, char *ptr, int len) {
 	return len;
 }
 
-/* Record samples --- start */
-#define N_SAMPLES 500 // n_samples * sample_period_ms = recording period [s]
 #define SAMPLE_PERIOD_MS 10 // 100 Hz
 
-typedef struct {                  // C: a struct bundles related values
-    uint32_t t_ms;                // time of the sample
-    int16_t  ax, ay, az;          // accelerometer, mg
-    int16_t  gx, gy, gz;          // gyro, filled in later
+typedef struct {
+    uint32_t t_ms;
+    int16_t  ax, ay, az;
+    int16_t  gx, gy, gz;
     int8_t   gtemp;
 } sample_t;
 
-static sample_t samples[N_SAMPLES];        // 16 bytes x 500 = 8 KB; global, not on the stack
-static volatile uint8_t start_flag = 0;    // C: volatile = "an interrupt may change this"
+static volatile uint8_t start = 0; // volatile > read value from memory each run
+
+/* Read data */
+static void read_sample(sample_t *s)
+{
+    uint8_t b[6], g[6], tr;
+
+    s->t_ms = HAL_GetTick();
+
+    HAL_I2C_Mem_Read(&hi2c1, ACC_ADDR, 0x28 | 0x80, I2C_MEMADD_SIZE_8BIT, b, 6, 100);
+    s->ax = (int16_t)((b[1] << 8) | b[0]) >> 4;
+    s->ay = (int16_t)((b[3] << 8) | b[2]) >> 4;
+    s->az = (int16_t)((b[5] << 8) | b[4]) >> 4;
+
+    gyro_rd(0x28, g, 6);
+    s->gx = (int16_t)((g[1] << 8) | g[0]);
+    s->gy = (int16_t)((g[3] << 8) | g[2]);
+    s->gz = (int16_t)((g[5] << 8) | g[4]);
+
+    gyro_rd(0x26, &tr, 1);
+    s->gtemp = (int8_t)tr;
+}
+
+/*// UNUSED FUNCTION: Recording data samples after B1 press --- start
+#define N_SAMPLES 500 // Recording time (500 x 10 ms = 5 s)
+
+static sample_t samples[N_SAMPLES];
 
 static void record_samples(void)
 {
-    uint8_t b[6];
-    uint32_t next = HAL_GetTick();                      // STM32 HAL: ms since boot
+    uint32_t next = HAL_GetTick();
 
     for (int k = 0; k < N_SAMPLES; k++) {
-        next += SAMPLE_PERIOD_MS;                       // absolute schedule, so no drift
-        while ((int32_t)(HAL_GetTick() - next) < 0) {}  // wait until that moment
+        next += SAMPLE_PERIOD_MS;
+        while ((int32_t)(HAL_GetTick() - next) < 0) {}
 
-        samples[k].t_ms = HAL_GetTick();                // timestamp first, before the slow I2C read
-
-        // accel values
-        HAL_I2C_Mem_Read(&hi2c1, ACC_ADDR, 0x28 | 0x80, I2C_MEMADD_SIZE_8BIT, b, 6, 100);
-        samples[k].ax = (int16_t)((b[1] << 8) | b[0]) >> 4;
-        samples[k].ay = (int16_t)((b[3] << 8) | b[2]) >> 4;
-        samples[k].az = (int16_t)((b[5] << 8) | b[4]) >> 4;
-
-        // gyro values
-        uint8_t g[6];
-        gyro_rd(0x28, g, 6);                              // OUT_X_L ... OUT_Z_H, low byte first
-        samples[k].gx = (int16_t)((g[1] << 8) | g[0]);    // C: combine two bytes into a signed 16-bit value
-        samples[k].gy = (int16_t)((g[3] << 8) | g[2]);
-        samples[k].gz = (int16_t)((g[5] << 8) | g[4]);
-
-        uint8_t tr;
-        gyro_rd(0x26, &tr, 1);                            // OUT_TEMP
-        samples[k].gtemp = (int8_t)tr;                    // C: reinterpret the byte as signed
+        read_sample(&samples[k]);
     }
 }
-/* Record samples --- end */
 
-/* Print samples --- start */
 static void print_samples(void)
 {
-    // t_ms, ax_mg, ay_mg, az_mg, gx_mdps, gy_mdps, gz_mdps, gtemp_raw
+    // t_ms | ax, ay, az (mg) | gx, gy, gz (mdps) | gyro temp (raw)
     for (int k = 0; k < N_SAMPLES; k++) {
-        printf("[ms] %lu | [mG] %d, %d, %d | [mdps] %ld, %ld, %ld, %d\n", samples[k].t_ms,
+        printf("%lu ms | %d, %d, %d mG | %ld, %ld, %ld mdps | %d\n temp", samples[k].t_ms,
                samples[k].ax, samples[k].ay, samples[k].az,
-               (long)samples[k].gx * 175 / 10,            // +-500 dps: 17.5 mdps per LSB
+               (long)samples[k].gx * 175 / 10,           // +-500 dps: 17.5 mdps per LSB
                (long)samples[k].gy * 175 / 10,
                (long)samples[k].gz * 175 / 10,
                samples[k].gtemp);
     }
 }
-/* Print samples --- end */
+// UNUSED FUNCTION: Recording data samples after B1 press --- end */
 
-/* Phase detection: free fall --- start */
-#define FF_THRESH_MG   300   // below this magnitude = "weightless"
-#define FF_MIN_SAMPLES 3     // must hold for 3 samples (30 ms) in a row, so one noisy sample can't trigger it
+/* Get live data samples --- start */
+#define SETTLE_MS     1000
+#define FF_THRESH_MG   300 // below this magnitude = "weightless"
+#define FF_MIN_SAMPLES 3
 
-static void detect_freefall(void)
+static void get_live_data(void)
 {
-    int in_ff = 0;                    // C: flag, 1 while in free fall
-    int run = 0;                      // C: how many samples in a row were below the threshold
-    uint32_t t_start = 0;
-    const int32_t thr2 = (int32_t)FF_THRESH_MG * FF_THRESH_MG;   // compare squares, so no sqrt is needed
+    sample_t s;
+    uint32_t next = HAL_GetTick();
+    int run = 0, in_ff = 0; // free fall detect
+    uint32_t run_start = 0;
+    const int32_t thr2 = (int32_t)FF_THRESH_MG * FF_THRESH_MG;
 
-    for (int k = 0; k < N_SAMPLES; k++) {
-        int32_t ax = samples[k].ax, ay = samples[k].ay, az = samples[k].az;
-        int32_t mag2 = ax*ax + ay*ay + az*az;          // magnitude squared; fits in int32
+    while (!start) {
+        next += SAMPLE_PERIOD_MS;
+        while ((int32_t)(HAL_GetTick() - next) < 0) {}
 
+        read_sample(&s);
+
+        printf("%lu ms | %d, %d, %d mG | %ld, %ld, %ld mdps | %d\n *C", s.t_ms,
+               s.ax, s.ay, s.az,
+               (long)s.gx * 175 / 10, // mdps range: +-500 dps
+               (long)s.gy * 175 / 10,
+               (long)s.gz * 175 / 10,
+               s.gtemp);
+
+        // free fall detection
+        int32_t mag2 = (int32_t)s.ax*s.ax + (int32_t)s.ay*s.ay + (int32_t)s.az*s.az;
         if (mag2 < thr2) {
+            if (run == 0) run_start = s.t_ms;
             run++;
             if (!in_ff && run >= FF_MIN_SAMPLES) {
                 in_ff = 1;
-                t_start = samples[k - FF_MIN_SAMPLES + 1].t_ms;   // the first sample of the run
-                printf("FREEFALL start at %lu ms\n", t_start);
+                printf(">>> Freefall start at %lu ms\n", run_start);
             }
         } else {
             if (in_ff) {
                 in_ff = 0;
-                uint32_t dur = samples[k].t_ms - t_start;
-                printf("FREEFALL end at %lu ms, duration %lu ms\n", samples[k].t_ms, dur);
+                printf(">>> Freefall end at %lu ms, duration %lu ms\n",
+                       s.t_ms, s.t_ms - run_start);
             }
             run = 0;
         }
     }
 }
-/* Phase detection: free fall --- end */
+/* Get live data samples --- end */
 
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
@@ -279,49 +285,47 @@ int main(void)
 
   i2c1_init();
 
-  /* check devices */
+  /* Check devices */
   printf("accel LSM303AGR 0x19: %s\n",
          HAL_I2C_IsDeviceReady(&hi2c1, ACC_ADDR, 3, 100) == HAL_OK ? "yes" : "no");
   printf("mag LSM303AGR 0x1E: %s\n",
          HAL_I2C_IsDeviceReady(&hi2c1, MAG_ADDR, 3, 100) == HAL_OK ? "yes" : "no");
 
   // write accel data
-  wr(ACC_ADDR, 0x20, 0x57);   // 100 Hz, normal power, XYZ on
-  wr(ACC_ADDR, 0x23, 0x08);   // +-2 g, high resolution
-  /* wr(MAG_ADDR, 0x00, 0x90); wr(MAG_ADDR, 0x01, 0x20); wr(MAG_ADDR, 0x02, 0x00); */
+  wr(ACC_ADDR, 0x20, 0x57);
+  wr(ACC_ADDR, 0x23, 0x08);
 
   gyro_spi_init();
 
   uint8_t id = 0;
   HAL_StatusTypeDef st = gyro_rd(0x0F, &id, 1);
-  printf("gyro I3G4250D WHO_AM_I 0x%02X, HAL status %d\n", id, st); // D3
+  printf("gyro I3G4250D WHO_AM_I 0x%02X, HAL status %d\n", id, st); // expected D3
 
   // write gyro data
-  gyro_wr(0x20, 0x4F);   // CTRL_REG1: 190 Hz output, powered on, X/Y/Z enabled
-  gyro_wr(0x23, 0x90);   // CTRL_REG4: block-data-update on, +-500 dps
+  gyro_wr(0x20, 0x4F);
+  gyro_wr(0x23, 0x90);
 
-  printf("> %lu Press B1 to start the drop test\n", HAL_GetTick());
+  printf("> %lu Press B1 to record values\n", HAL_GetTick());
 
   while (1)
   {
+	  // previous implementation: drop test (press B1 > drop > record data > output data samples after the test)
 
-	  // drop test: drop > read values > print after drop
-      start_flag = 0;
-      while (!start_flag) {} // wait for B1 press
+      start = 0;
+      while (!start) {} // wait for B1 press
 
-      // settling for recording: delay after the B1 press (so that pushing doesn't affect measurements)
+      // delay after the B1 press, so that pushing B1 doesn't affect measurements
       BSP_LED_On(LED3);
       HAL_Delay(1000);
       BSP_LED_Off(LED3);
+      start = 0;
 
-      // recording
+      // live data
       BSP_LED_On(LED6);
-      record_samples();
+      get_live_data();
       BSP_LED_Off(LED6);
 
-      print_samples();
-      detect_freefall();
-      printf("> %lu Drop test ended (press B1 to repeat)\n", HAL_GetTick());
+      printf("> %lu Recording ended (press B1 to resume)\n", HAL_GetTick());
   }
 }
 
@@ -386,8 +390,6 @@ static void SystemClock_Config(void)
   }
 }
 
-
-
 /**
   * @brief  Configures EXTI Line0 (connected to PA0 pin) in interrupt mode
   * @param  None
@@ -420,7 +422,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
   if(GPIO_Pin == KEY_BUTTON_PIN)
   {
-	  start_flag = 1;
+	  start = 1;
   }
 }
 
