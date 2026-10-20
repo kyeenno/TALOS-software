@@ -19,4 +19,4 @@
 ### Environment
 - IDE: STM32CubeIDE
 - Firmware version: STM32F411E-Discovery_v1.28.0
-- Board: STM32F411E-Discovery (reference VMB1115B)
+- Board: STM32F411E-Discovery (reference MB1115B)
