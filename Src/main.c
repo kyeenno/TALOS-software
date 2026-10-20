@@ -190,6 +190,13 @@ static void print_samples(void)
 #define FF_THRESH_MG   300 // below this magnitude = "weightless"
 #define FF_MIN_SAMPLES 3
 
+// calculate flight distance (height) h = 1/2 * g * t^2
+static uint32_t fall_distance(uint32_t t_ms)
+{
+    uint64_t t2 = (uint64_t)t_ms * t_ms;
+    return (uint32_t)(4905ULL * t2 / 1000000ULL);
+}
+
 static void get_live_data(void)
 {
     sample_t s;
@@ -204,12 +211,11 @@ static void get_live_data(void)
 
         read_sample(&s);
 
-        printf("%lu ms | %d, %d, %d mG | %ld, %ld, %ld mdps | %d\n *C", s.t_ms,
+        printf("%lu ms | %d, %d, %d mg | %ld, %ld, %ld mdps \n ", s.t_ms,
                s.ax, s.ay, s.az,
                (long)s.gx * 175 / 10, // mdps range: +-500 dps
                (long)s.gy * 175 / 10,
-               (long)s.gz * 175 / 10,
-               s.gtemp);
+               (long)s.gz * 175 / 10);
 
         // free fall detection
         int32_t mag2 = (int32_t)s.ax*s.ax + (int32_t)s.ay*s.ay + (int32_t)s.az*s.az;
@@ -223,8 +229,9 @@ static void get_live_data(void)
         } else {
             if (in_ff) {
                 in_ff = 0;
-                printf(">>> Freefall end at %lu ms, duration %lu ms\n",
-                       s.t_ms, s.t_ms - run_start);
+                uint32_t duration = s.t_ms - run_start;
+                printf(">>> Freefall end at %lu ms, duration %lu ms, distance %lu mm\n",
+                       s.t_ms, duration, fall_distance(duration));
             }
             run = 0;
         }
