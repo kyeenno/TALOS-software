@@ -3636,7 +3636,7 @@ LOAD /opt/st/stm32cubeide_2.2.0/plugins/com.st.stm32cube.ide.mcu.externaltools.g
  .debug_macro   0x000166b5      0x112 ./Example/User/sysmem.o
  .debug_macro   0x000167c7      0x23c ./Example/User/sysmem.o
 
-.debug_line     0x00000000     0xbe03
+.debug_line     0x00000000     0xbd63
  .debug_line    0x00000000      0xb27 ./Drivers/BSP/STM32F411E-Discovery/stm32f411e_discovery.o
  .debug_line    0x00000b27      0x7bd ./Drivers/CMSIS/system_stm32f4xx.o
  .debug_line    0x000012e4      0x9d4 ./Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal.o
@@ -3646,26 +3646,26 @@ LOAD /opt/st/stm32cubeide_2.2.0/plugins/com.st.stm32cube.ide.mcu.externaltools.g
  .debug_line    0x00006e9c      0xdc8 ./Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_rcc.o
  .debug_line    0x00007c64     0x1f85 ./Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_spi.o
  .debug_line    0x00009be9       0x7a ./Example/Startup/startup_stm32f411vehx.o
- .debug_line    0x00009c63      0xccd ./Example/User/main.o
- .debug_line    0x0000a930      0x823 ./Example/User/stm32f4xx_it.o
- .debug_line    0x0000b153      0x7ea ./Example/User/syscalls.o
- .debug_line    0x0000b93d      0x4c6 ./Example/User/sysmem.o
+ .debug_line    0x00009c63      0xc7d ./Example/User/main.o
+ .debug_line    0x0000a8e0      0x7d3 ./Example/User/stm32f4xx_it.o
+ .debug_line    0x0000b0b3      0x7ea ./Example/User/syscalls.o
+ .debug_line    0x0000b89d      0x4c6 ./Example/User/sysmem.o
 
-.debug_str      0x00000000    0x89ce8
- .debug_str     0x00000000    0x89ce8 ./Drivers/BSP/STM32F411E-Discovery/stm32f411e_discovery.o
+.debug_str      0x00000000    0x89c48
+ .debug_str     0x00000000    0x89c48 ./Drivers/BSP/STM32F411E-Discovery/stm32f411e_discovery.o
                               0x823e8 (size before relaxing)
- .debug_str     0x00089ce8    0x80473 ./Drivers/CMSIS/system_stm32f4xx.o
- .debug_str     0x00089ce8    0x80e59 ./Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal.o
- .debug_str     0x00089ce8    0x80b91 ./Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_cortex.o
- .debug_str     0x00089ce8    0x805a8 ./Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_gpio.o
- .debug_str     0x00089ce8    0x8143e ./Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_i2c.o
- .debug_str     0x00089ce8    0x80861 ./Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_rcc.o
- .debug_str     0x00089ce8    0x80d46 ./Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_spi.o
- .debug_str     0x00089ce8       0xb6 ./Example/Startup/startup_stm32f411vehx.o
- .debug_str     0x00089ce8    0x85a06 ./Example/User/main.o
- .debug_str     0x00089ce8    0x81307 ./Example/User/stm32f4xx_it.o
- .debug_str     0x00089ce8     0x99ac ./Example/User/syscalls.o
- .debug_str     0x00089ce8     0x7756 ./Example/User/sysmem.o
+ .debug_str     0x00089c48    0x80473 ./Drivers/CMSIS/system_stm32f4xx.o
+ .debug_str     0x00089c48    0x80e59 ./Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal.o
+ .debug_str     0x00089c48    0x80b91 ./Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_cortex.o
+ .debug_str     0x00089c48    0x805a8 ./Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_gpio.o
+ .debug_str     0x00089c48    0x8143e ./Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_i2c.o
+ .debug_str     0x00089c48    0x80861 ./Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_rcc.o
+ .debug_str     0x00089c48    0x80d46 ./Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_spi.o
+ .debug_str     0x00089c48       0xb6 ./Example/Startup/startup_stm32f411vehx.o
+ .debug_str     0x00089c48    0x859b6 ./Example/User/main.o
+ .debug_str     0x00089c48    0x812b7 ./Example/User/stm32f4xx_it.o
+ .debug_str     0x00089c48     0x99ac ./Example/User/syscalls.o
+ .debug_str     0x00089c48     0x7756 ./Example/User/sysmem.o
 
 .comment        0x00000000       0x43
  .comment       0x00000000       0x43 ./Drivers/BSP/STM32F411E-Discovery/stm32f411e_discovery.o

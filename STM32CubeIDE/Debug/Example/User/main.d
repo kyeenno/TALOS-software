@@ -1,6 +1,4 @@
-Example/User/main.o: \
- /home/kyeenno/STM32Cube_FW_F4_V1.28.0/Projects/STM32F411E-Discovery/Examples/GPIO/GPIO_EXTI/Src/main.c \
- ../../Inc/main.h \
+Example/User/main.o: ../Example/User/main.c ../../Inc/main.h \
  ../../../../../../../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../../Inc/stm32f4xx_hal_conf.h \
  ../../../../../../../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \

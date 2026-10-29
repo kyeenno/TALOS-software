@@ -37,15 +37,15 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  16 .debug_macro  00016a03  00000000  00000000  00012bda  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   0000be03  00000000  00000000  000295dd  2**0
+ 17 .debug_line   0000bd63  00000000  00000000  000295dd  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00089ce8  00000000  00000000  000353e0  2**0
+ 18 .debug_str    00089c48  00000000  00000000  00035340  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  000bf0c8  2**0
+ 19 .comment      00000043  00000000  00000000  000bef88  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00003184  00000000  00000000  000bf10c  2**2
+ 20 .debug_frame  00003184  00000000  00000000  000befcc  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 0000009a  00000000  00000000  000c2290  2**0
+ 21 .debug_line_str 0000009a  00000000  00000000  000c2150  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -8777,26 +8777,26 @@ static void get_live_data(void)
  8003746:	4618      	mov	r0, r3
  8003748:	f7ff fef6 	bl	8003538 <read_sample>
 
-        printf("%lu ms | %d, %d, %d mG | %ld, %ld, %ld mdps \n ", s.t_ms,
+        printf("%lu ms | %d, %d, %d mg | %ld, %ld, %ld mdps \n ", s.t_ms,
  800374c:	683c      	ldr	r4, [r7, #0]
                s.ax, s.ay, s.az,
  800374e:	f9b7 3004 	ldrsh.w	r3, [r7, #4]
-        printf("%lu ms | %d, %d, %d mG | %ld, %ld, %ld mdps \n ", s.t_ms,
+        printf("%lu ms | %d, %d, %d mg | %ld, %ld, %ld mdps \n ", s.t_ms,
  8003752:	461e      	mov	r6, r3
                s.ax, s.ay, s.az,
  8003754:	f9b7 3006 	ldrsh.w	r3, [r7, #6]
-        printf("%lu ms | %d, %d, %d mG | %ld, %ld, %ld mdps \n ", s.t_ms,
+        printf("%lu ms | %d, %d, %d mg | %ld, %ld, %ld mdps \n ", s.t_ms,
  8003758:	469c      	mov	ip, r3
                s.ax, s.ay, s.az,
  800375a:	f9b7 3008 	ldrsh.w	r3, [r7, #8]
-        printf("%lu ms | %d, %d, %d mG | %ld, %ld, %ld mdps \n ", s.t_ms,
+        printf("%lu ms | %d, %d, %d mg | %ld, %ld, %ld mdps \n ", s.t_ms,
  800375e:	461d      	mov	r5, r3
                (long)s.gx * 175 / 10, // mdps range: +-500 dps
  8003760:	f9b7 300a 	ldrsh.w	r3, [r7, #10]
  8003764:	461a      	mov	r2, r3
  8003766:	23af      	movs	r3, #175	@ 0xaf
  8003768:	fb02 f303 	mul.w	r3, r2, r3
-        printf("%lu ms | %d, %d, %d mG | %ld, %ld, %ld mdps \n ", s.t_ms,
+        printf("%lu ms | %d, %d, %d mg | %ld, %ld, %ld mdps \n ", s.t_ms,
  800376c:	4a3b      	ldr	r2, [pc, #236]	@ (800385c <get_live_data+0x14c>)
  800376e:	fb82 1203 	smull	r1, r2, r2, r3
  8003772:	1092      	asrs	r2, r2, #2
@@ -8807,7 +8807,7 @@ static void get_live_data(void)
  800377c:	4619      	mov	r1, r3
  800377e:	23af      	movs	r3, #175	@ 0xaf
  8003780:	fb01 f303 	mul.w	r3, r1, r3
-        printf("%lu ms | %d, %d, %d mG | %ld, %ld, %ld mdps \n ", s.t_ms,
+        printf("%lu ms | %d, %d, %d mg | %ld, %ld, %ld mdps \n ", s.t_ms,
  8003784:	4935      	ldr	r1, [pc, #212]	@ (800385c <get_live_data+0x14c>)
  8003786:	fb81 0103 	smull	r0, r1, r1, r3
  800378a:	1089      	asrs	r1, r1, #2
@@ -8818,7 +8818,7 @@ static void get_live_data(void)
  8003794:	4618      	mov	r0, r3
  8003796:	23af      	movs	r3, #175	@ 0xaf
  8003798:	fb00 f303 	mul.w	r3, r0, r3
-        printf("%lu ms | %d, %d, %d mG | %ld, %ld, %ld mdps \n ", s.t_ms,
+        printf("%lu ms | %d, %d, %d mg | %ld, %ld, %ld mdps \n ", s.t_ms,
  800379c:	482f      	ldr	r0, [pc, #188]	@ (800385c <get_live_data+0x14c>)
  800379e:	fb80 e003 	smull	lr, r0, r0, r3
  80037a2:	1080      	asrs	r0, r0, #2

@@ -1,5 +1,4 @@
-Example/User/stm32f4xx_it.o: \
- /home/kyeenno/STM32Cube_FW_F4_V1.28.0/Projects/STM32F411E-Discovery/Examples/GPIO/GPIO_EXTI/Src/stm32f4xx_it.c \
+Example/User/stm32f4xx_it.o: ../Example/User/stm32f4xx_it.c \
  ../../Inc/main.h \
  ../../../../../../../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../../Inc/stm32f4xx_hal_conf.h \

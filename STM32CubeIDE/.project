@@ -106,16 +106,6 @@
 			<locationURI>PARENT-6-PROJECT_LOC/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c</locationURI>
 		</link>
 		<link>
-			<name>Example/User/main.c</name>
-			<type>1</type>
-			<location>/home/kyeenno/STM32Cube_FW_F4_V1.28.0/Projects/STM32F411E-Discovery/Examples/GPIO/GPIO_EXTI/Src/main.c</location>
-		</link>
-		<link>
-			<name>Example/User/stm32f4xx_it.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Src/stm32f4xx_it.c</locationURI>
-		</link>
-		<link>
 			<name>Drivers/BSP/STM32F411E-Discovery/stm32f411e_discovery.c</name>
 			<type>1</type>
 			<locationURI>PARENT-6-PROJECT_LOC/Drivers/BSP/STM32F411E-Discovery/stm32f411e_discovery.c</locationURI>
